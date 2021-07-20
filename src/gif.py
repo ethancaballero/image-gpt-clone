@@ -33,6 +33,9 @@ def generate(args, model, context, length, num_samples=1, temperature=1.0):
     frames = []
     pad = torch.zeros(1, num_samples, dtype=torch.long)  # to pad prev output
     if torch.cuda.is_available():
+        output = output.cuda()
+        cond_logprobs = cond_logprobs.cuda()
+        lls = lls.cuda()
         pad = pad.cuda()
     with torch.no_grad():
         for _ in tqdm(range(length), leave=False):
