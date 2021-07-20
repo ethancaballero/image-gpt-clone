@@ -65,6 +65,11 @@ def main(args):
     imgs_all = torch.zeros(0, 784, dtype=torch.long)
     lls_all = torch.zeros(0)
 
+    if torch.cuda.is_available():
+        lps_all = lps_all.cuda()
+        imgs_all = imgs_all.cuda()
+        lls_all = lls_all.cuda()
+
     datapoints = args.datapoints
 
     with torch.no_grad():
