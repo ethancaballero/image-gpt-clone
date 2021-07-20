@@ -4,6 +4,7 @@ import numpy as np
 import argparse
 from tqdm import tqdm
 from PIL import Image
+import os
 
 from module import ImageGPT
 from prepare_data import unquantize
@@ -74,9 +75,11 @@ def main(args):
             imgs_all = torch.cat((imgs_all, imgs), dim=0)
             lls_all = torch.cat((lls_all, lls), dim=0)
 
-    torch.save(lps_all, 'data/cond_ll.pt')
-    torch.save(imgs_all, 'data/imgs.pt')
-    torch.save(lls_all, 'data/lls.pt')
+    if not os.path.exists('_data'):
+        os.makedirs('_data')
+    torch.save(lps_all, '_data/cond_ll.pt')
+    torch.save(imgs_all, '_data/imgs.pt')
+    torch.save(lls_all, '_data/lls.pt')
 
     """
     pad_frames = []
