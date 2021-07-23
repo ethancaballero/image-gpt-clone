@@ -167,13 +167,13 @@ class _Dataset(object):
 
     def __init__(self, x, cond_ll, ll=None, dataset_size=None, transform=None, in_mem=True):
         self.in_mem = in_mem
-        self.dataset = torch.load(x)
+        self.dataset = torch.load(x).cpu()
         self.cond_ll = None
         self.lls = None
         if cond_ll != None:
-            self.cond_ll = torch.load(cond_ll)
+            self.cond_ll = torch.load(cond_ll).cpu()
         if ll != None:
-            self.lls = torch.load(ll)
+            self.lls = torch.load(ll).cpu()
         #if in_mem: self.dataset = self.dataset.float().div(255)
         self.transform = transform
 
