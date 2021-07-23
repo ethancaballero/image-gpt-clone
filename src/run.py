@@ -327,8 +327,9 @@ if __name__ == "__main__":
 
     #scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
     iters = 0
-    #for epoch in range(1, args.epochs + 1):
-    #test(model, device, test_loader, epoch-1)
-    iters = train(args, model, device, train_loader, test_loader, optimizer, epoch-1, iters)
-    #scheduler.step()
+    epoch = 1
+    for epoch in range(1, args.epochs + 1):
+        #test(model, device, test_loader, epoch-1)
+        iters = train(args, model, device, train_loader, test_loader, optimizer, epoch-1, iters)
+        #scheduler.step()
     
