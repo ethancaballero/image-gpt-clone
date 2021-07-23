@@ -261,7 +261,7 @@ if __name__ == "__main__":
     #direct = '/scratch/ethancab/teacher_data/teacher_data'
 
     direct = '/Users/ethancaballero/research/scaling_breadth/conditional_kl/image-gpt-clone'
-    direct = '/home/mila/c/caballero/research/image-gpt-mod'
+    direct = '/home/mila/c/caballero/research/image-gpt-clone'
     train_data = TeacherFolder(x=direct+'/_data/imgs.pt', cond_ll=direct+'/_data/cond_ll.pt', ll=direct+'/_data/lls.pt', dataset_size=args.train_set_size, train=True, transform=None)
     test_data = TeacherFolder(x=direct+'/_data/imgs.pt', cond_ll=direct+'/_data/cond_ll.pt', ll=direct+'/_data/lls.pt', dataset_size=args.test_set_size, train=False, transform=None)
 
