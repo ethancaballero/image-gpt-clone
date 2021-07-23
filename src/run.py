@@ -141,7 +141,7 @@ def test(args, model, device, test_loader, epoch, iters):
         log_dict = {}
         log_dict.update({'eval_loss': test_loss,
         })
-        log_dict.update({"charts__ll/"+str(epoch): figure})
+        log_dict.update({"charts__ll/"+str(iters*args.batch_size): figure})
         #wandb.log(log_dict, step=epoch)
         wandb.log(log_dict, step=iters*args.batch_size)
         
