@@ -132,20 +132,22 @@ def test(args, model, device, test_loader, epoch, iters):
         kl_div_cat = torch.cat(kl_divs).float().cpu()
         #correct_cat = torch.cat(corrects).float().cpu()
         sort_idxs = ll_cat.float().sort(descending=True)[1]
-        ll_cat, kl_div_cat = ll_cat[sort_idxs], kl_div_cat[sort_idxs]
+        ll_cat, pll_cat, kl_div_cat = ll_cat[sort_idxs], pll_cat[sort_idxs], kl_div_cat[sort_idxs]
 
         markersize = 2.0
-        figure, axis = plt.subplots(1, 4)
+        figure, axis = plt.subplots(1, 5)
 
         axis[0].plot(np.arange(0, len(ll_cat)), ll_cat.cpu().numpy(), '.', markersize=markersize, color='k')
-        axis[1].plot(np.arange(0, len(ll_cat)), kl_div_cat.cpu().numpy(), '.', markersize=markersize, color='k')
-        axis[2].plot(np.arange(0, len(pll_cat)), (ll_cat-pll_cat).cpu().numpy(), '.', markersize=markersize, color='k')
-        axis[3].plot(np.arange(0, len(pll_cat)), (ll_cat-pll_cat).abs().cpu().numpy(), '.', markersize=markersize, color='k')
+        axis[1].plot(np.arange(0, len(pll_cat)), pll_cat.cpu().numpy(), '.', markersize=markersize, color='k')
+        axis[2].plot(np.arange(0, len(ll_cat)), kl_div_cat.cpu().numpy(), '.', markersize=markersize, color='k')
+        axis[3].plot(np.arange(0, len(pll_cat)), (ll_cat-pll_cat).cpu().numpy(), '.', markersize=markersize, color='k')
+        axis[4].plot(np.arange(0, len(pll_cat)), (ll_cat-pll_cat).abs().cpu().numpy(), '.', markersize=markersize, color='k')
 
         axis[0].set_ylabel("log-likelihoods")
-        axis[1].set_ylabel("kl_divs")
-        axis[2].set_ylabel("gap log-likelihoods")
-        axis[3].set_ylabel("abs gap log-likelihoods")
+        axis[1].set_ylabel("predicted log-likelihoods")
+        axis[2].set_ylabel("kl_divs")
+        axis[3].set_ylabel("gap log-likelihoods")
+        axis[4].set_ylabel("abs gap log-likelihoods")
 
         log_dict = {}
         log_dict.update({'eval_loss': test_loss,
