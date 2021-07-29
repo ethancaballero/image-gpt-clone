@@ -94,6 +94,7 @@ def test(args, model, device, test_loader, epoch, iters):
     correct = 0
     losses = []
     corrects = []
+    plls = []
     lls = []
     kl_divs = []
     with torch.no_grad():
@@ -109,13 +110,16 @@ def test(args, model, device, test_loader, epoch, iters):
             kl_div = torch.nn.functional.kl_div(logprobs_model.permute(1, 0, 2), cond_ll, log_target=True, reduction='none')
             kl_div = kl_div.sum(-1).mean(-1)
             kl_divs.append(kl_div)
-            #import pdb; pdb.set_trace()
+
+            log_softmax = torch.nn.functional.log_softmax(logits, -1)
+            predicted_ll = (log_softmax * torch.nn.functional.one_hot(data.long(), 16)).sum(-1).permute(1,0).sum(-1)
             #torch.nn.functional.kl_div()
             loss = torch.nn.functional.cross_entropy(logits.view(-1, logits.size(-1)), data.view(-1), reduction='none')
             loss = loss.mean(-1)
             test_loss += loss.sum().item()  # sum up batch loss
             #pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             #correct += pred.eq(target.view_as(pred)).sum().item()
+            plls.append(predicted_ll)
             lls.append(ll)
             losses.append(loss)
 
@@ -124,19 +128,24 @@ def test(args, model, device, test_loader, epoch, iters):
         print('\nTest set: Average loss: ', test_loss)
 
         ll_cat = torch.cat(lls).float().cpu()
+        pll_cat = torch.cat(plls).float().cpu()
         kl_div_cat = torch.cat(kl_divs).float().cpu()
         #correct_cat = torch.cat(corrects).float().cpu()
         sort_idxs = ll_cat.float().sort(descending=True)[1]
         ll_cat, kl_div_cat = ll_cat[sort_idxs], kl_div_cat[sort_idxs]
 
         markersize = 2.0
-        figure, axis = plt.subplots(1, 2)
+        figure, axis = plt.subplots(1, 4)
 
         axis[0].plot(np.arange(0, len(ll_cat)), ll_cat.cpu().numpy(), '.', markersize=markersize, color='k')
         axis[1].plot(np.arange(0, len(ll_cat)), kl_div_cat.cpu().numpy(), '.', markersize=markersize, color='k')
+        axis[2].plot(np.arange(0, len(pll_cat)), (ll_cat-pll_cat).cpu().numpy(), '.', markersize=markersize, color='k')
+        axis[3].plot(np.arange(0, len(pll_cat)), (ll_cat-pll_cat).abs().cpu().numpy(), '.', markersize=markersize, color='k')
 
         axis[0].set_ylabel("log-likelihoods")
         axis[1].set_ylabel("kl_divs")
+        axis[2].set_ylabel("gap log-likelihoods")
+        axis[3].set_ylabel("abs gap log-likelihoods")
 
         log_dict = {}
         log_dict.update({'eval_loss': test_loss,

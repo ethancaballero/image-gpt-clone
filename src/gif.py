@@ -56,6 +56,10 @@ def generate(args, model, context, length, num_samples=1, temperature=1.0):
 
 def main(args):
     model = ImageGPT.load_from_checkpoint(args.checkpoint).gpt
+
+    params = sum(p.numel() for p in model.parameters())
+    print("params: ", params)
+
     if torch.cuda.is_available():
         model = model.cuda()
     model.eval()
